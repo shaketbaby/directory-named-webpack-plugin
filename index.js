@@ -1,8 +1,8 @@
-module.exports = DirectoryNamedPlugin;
+module.exports = DirectoryNamedWebpackPlugin;
 
-function DirectoryNamedPlugin() {}
+function DirectoryNamedWebpackPlugin() {}
 
-DirectoryNamedPlugin.prototype.apply = function(resolver) {
+DirectoryNamedWebpackPlugin.prototype.apply = function(resolver) {
 	resolver.plugin("directory", resolveDirectory);
 };
 
