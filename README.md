@@ -1,2 +1,17 @@
-# directory-named-file-plugin
-A Webpack plugin that treats a file with the name of directory as the index file
+
+## What
+Normally, Webpack looks for **index** file when the path passed to `require` points to a directory; which means there may have a lot of **index** files.
+
+This plugin makes it possible to use the name of the directory as the name of the entry file, makes it easier to find.
+
+## Usage
+
+Add the following to Webpack's config file:
+
+```javascript
+  plugins: [
+    new webpack.ResolverPlugin(new DirectoryNamePlugin())
+  ]
+```
+
+Then when `require("component/foo")` and the path "component/foo" is resolved to a directory, Webpack will try to look for `component/foo/foo.js` as the entry.
