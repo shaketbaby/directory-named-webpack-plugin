@@ -1,0 +1,27 @@
+{
+  "name": "directory-named-webpack-plugin",
+  "version": "0.0.0",
+  "description": "A Webpack plugin that treats a file with the name of directory as the index file",
+  "main": "index.js",
+  "scripts": {
+    "push": "git push --tag origin master:master",
+    "bump": "bump --prompt --commit --tag --push --all"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shaketbaby/directory-named-webpack-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "plugin"
+  ],
+  "author": "Shaketbaby",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shaketbaby/directory-named-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/shaketbaby/directory-named-webpack-plugin#readme",
+  "devDependencies": {
+    "version-bump-prompt": "^1.5.1"
+  }
+}
