@@ -10,7 +10,7 @@ Add the following to Webpack's config file:
 
 ```javascript
   plugins: [
-    new webpack.ResolverPlugin(new DirectoryNamePlugin())
+    new webpack.ResolverPlugin(new DirectoryNamedPlugin())
   ]
 ```
 
