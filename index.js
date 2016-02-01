@@ -1,3 +1,4 @@
+var path = require("path");
 module.exports = DirectoryNamedWebpackPlugin;
 
 function DirectoryNamedWebpackPlugin() {}
@@ -8,7 +9,7 @@ DirectoryNamedWebpackPlugin.prototype.apply = function(resolver) {
 
 function resolveDirectory(request, callback) {
 	var directory = this.join(request.path, request.request);
-	var file = directory.substr(directory.lastIndexOf("/") + 1);
+	var file = directory.substr(directory.lastIndexOf(path.sep) + path.sep.length);
 	var fileRequest = { path: directory, query: request.query, request: file };
 	this.doResolve("file", fileRequest, wrap(callback, file));
 }
