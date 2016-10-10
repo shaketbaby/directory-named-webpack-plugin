@@ -1,16 +1,23 @@
 var path = require("path");
 module.exports = DirectoryNamedWebpackPlugin;
 
-function DirectoryNamedWebpackPlugin(honorIndex) {
-  this.honorIndex = !!honorIndex;
+function DirectoryNamedWebpackPlugin(options) {
+  options = options || {};
+  this.options = {
+    honorIndex: !!options.honorIndex,
+    ignoreFn: options.ignoreFn || function (x) { return false; }
+  };
 }
 
 DirectoryNamedWebpackPlugin.prototype.apply = function (resolver) {
-  resolver.plugin("directory", resolveDirectory(this.honorIndex));
+  resolver.plugin("directory", resolveDirectory(this.options));
 };
 
-function resolveDirectory(honorIndex) {
+function resolveDirectory(options) {
   return function (request, callback) {
+    if (options.ignoreFn(request)) {
+        return callback();
+    }
     var _this = this;
     var dirPath = _this.join(request.path, request.request);
     var dirName = dirPath.substr(dirPath.lastIndexOf(path.sep) + path.sep.length);
@@ -21,7 +28,7 @@ function resolveDirectory(honorIndex) {
       }
 
       _this.forEachBail(
-        honorIndex ? ["index", dirName] : [dirName],
+        options.honorIndex ? ["index", dirName] : [dirName],
         function (file, innerCallback) {
           var fileRequest = { path: dirPath, query: request.query, request: file };
           _this.doResolve("file", fileRequest, wrap(innerCallback, file));
