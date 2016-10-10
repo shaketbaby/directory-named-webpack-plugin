@@ -2,10 +2,10 @@ var path = require("path");
 module.exports = DirectoryNamedWebpackPlugin;
 
 function DirectoryNamedWebpackPlugin(options) {
-  options = options || {};
+  var optionsToUse = typeof options  === "boolean" ? { honorIndex : options } : (options || {});
   this.options = {
-    honorIndex: !!options.honorIndex,
-    ignoreFn: options.ignoreFn || function (x) { return false; }
+    honorIndex: optionsToUse.honorIndex,
+    ignoreFn: optionsToUse.ignoreFn || noop
   };
 }
 
@@ -53,3 +53,5 @@ function wrap(callback, file) {
   wrapper.missing = callback.missing;
   return wrapper;
 }
+
+function noop() {}
