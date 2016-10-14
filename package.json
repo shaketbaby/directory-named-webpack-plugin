@@ -21,6 +21,9 @@
     "url": "https://github.com/shaketbaby/directory-named-webpack-plugin/issues"
   },
   "homepage": "https://github.com/shaketbaby/directory-named-webpack-plugin#readme",
+  "dependencies": {
+    "webpack": "^1.13.0"
+  },
   "devDependencies": {
     "version-bump-prompt": "^1.5.1"
   }
