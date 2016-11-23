@@ -36,7 +36,9 @@ Can also pass in an options object to further customise the plugin
 
   plugins: [
     new webpack.ResolverPlugin(new DirectoryNamedWebpackPlugin({
-      honorIndex: true | false,
+      honorIndex: true | false, // defaults to false
+      honorPackage: true | false, // defaults to true. Respect any existing
+                                  // package.json's "main" property
       ignoreFn: function(webpackResolveRequest) {
         // custom logic to decide whether request should be ignored
         // return true if request should be ignored, false otherwise
