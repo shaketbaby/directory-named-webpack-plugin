@@ -2,9 +2,10 @@ var path = require("path");
 module.exports = DirectoryNamedWebpackPlugin;
 
 function DirectoryNamedWebpackPlugin(options) {
-  var optionsToUse = typeof options  === "boolean" ? { honorIndex : options } : (options || {});
+  var optionsToUse = typeof options === "boolean" ? { honorIndex : options } : (options || {});
   this.options = {
     honorIndex: optionsToUse.honorIndex,
+    honorPackage: optionsToUse.honorPackage !== false,
     ignoreFn: optionsToUse.ignoreFn || noop
   };
 }
@@ -16,7 +17,7 @@ DirectoryNamedWebpackPlugin.prototype.apply = function (resolver) {
 function resolveDirectory(options) {
   return function (request, callback) {
     if (options.ignoreFn(request)) {
-        return callback();
+      return callback();
     }
     var _this = this;
     var dirPath = _this.join(request.path, request.request);
@@ -27,8 +28,25 @@ function resolveDirectory(options) {
         return callback();
       }
 
+      var attempts = []
+
+      if (options.honorPackage) {
+        try {
+          var mainFilePath = require(path.resolve(dirPath, 'package.json')).main;
+          attempts.push(mainFilePath);
+        } catch (e) {
+          // No problem, this is optional.
+        }
+      }
+
+      if (options.honorIndex) {
+        attempts.push("index");
+      }
+
+      attempts.push(dirName)
+
       _this.forEachBail(
-        options.honorIndex ? ["index", dirName] : [dirName],
+        attempts,
         function (file, innerCallback) {
           var fileRequest = { path: dirPath, query: request.query, request: file };
           _this.doResolve("file", fileRequest, wrap(innerCallback, file));
