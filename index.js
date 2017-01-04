@@ -6,6 +6,7 @@ function DirectoryNamedWebpackPlugin(options) {
   this.options = {
     honorIndex: optionsToUse.honorIndex,
     honorPackage: optionsToUse.honorPackage !== false,
+    transformFn: optionsToUse.transformFn,
     ignoreFn: optionsToUse.ignoreFn || noop
   };
 }
@@ -43,7 +44,21 @@ function resolveDirectory(options) {
         attempts.push("index");
       }
 
-      attempts.push(dirName)
+      if (options.transformFn) {
+        var transformResult = options.transformFn(dirName);
+
+        if (!Array.isArray(transformResult)) {
+          transformResult = [ transformResult ];
+        }
+
+        transformResult = transformResult.filter(function (attemptName) {
+          return typeof attemptName === 'string' && attemptName.length > 0;
+        });
+
+        attempts = attempts.concat(transformResult);
+      } else {
+        attempts.push(dirName);
+      }
 
       _this.forEachBail(
         attempts,
