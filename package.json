@@ -1,6 +1,6 @@
 {
   "name": "directory-named-webpack-plugin",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A Webpack plugin that treats a file with the name of directory as the index file",
   "main": "index.js",
   "scripts": {
