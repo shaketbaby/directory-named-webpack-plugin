@@ -11,10 +11,11 @@ Add the following to Webpack's config file:
 ```javascript
   var DirectoryNamedWebpackPlugin = require("directory-named-webpack-plugin");
 
-  plugins: [
-    new webpack.ResolverPlugin(new DirectoryNamedWebpackPlugin())
-  ]
-
+  resolve: {
+    plugins: [
+      new DirectoryNamedWebpackPlugin()
+    ]
+  }
 ```
 
 Then when `require("component/foo")` and the path "component/foo" is resolved to a directory, Webpack will try to look for `component/foo/foo.js` as the entry (given default options).
@@ -24,32 +25,36 @@ If there is also an index file, e.g. `index.js`, and it should be used as entry 
 ```javascript
   var DirectoryNamedWebpackPlugin = require("directory-named-webpack-plugin");
 
-  plugins: [
-    new webpack.ResolverPlugin(new DirectoryNamedWebpackPlugin(true))
-  ]
+  resolve: {
+    plugins: [
+      new DirectoryNamedWebpackPlugin(true)
+    ]
+  }
 ```
 
 You can also pass in an options object to further customise the plugin:
 ```javascript
   var DirectoryNamedWebpackPlugin = require("directory-named-webpack-plugin");
 
-  plugins: [
-    new webpack.ResolverPlugin(new DirectoryNamedWebpackPlugin({
-      honorIndex: true | false, // defaults to false
-      honorPackage: true | false, // defaults to true. Respect any existing
-                                  // package.json's "main" property
-      ignoreFn: function(webpackResolveRequest) {
-        // custom logic to decide whether request should be ignored
-        // return true if request should be ignored, false otherwise
-        return false; // default
-      },
+  resolve: {
+    plugins: [
+      new DirectoryNamedWebpackPlugin({
+        honorIndex: true | false, // defaults to false
+        honorPackage: true | false, // defaults to true. Respect any existing
+                                    // package.json's "main" property
+        ignoreFn: function(webpackResolveRequest) {
+          // custom logic to decide whether request should be ignored
+          // return true if request should be ignored, false otherwise
+          return false; // default
+        },
       
-      transformFn: function(dirName) {
-        // use this function to provide custom transforms of resolving directory name
-        // return desired filename or array of filenames which will be used
-        // one by one (honoring order) in attempts to resolve module        
-        return dirName; // default
-      }
-    }))
-  ]
+        transformFn: function(dirName) {
+          // use this function to provide custom transforms of resolving directory name
+          // return desired filename or array of filenames which will be used
+          // one by one (honoring order) in attempts to resolve module        
+          return dirName; // default
+        }
+      })
+    ]
+  }
 ```

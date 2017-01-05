@@ -71,6 +71,12 @@ function apply(options, resolver) {
 }
 
 module.exports = function (options) {
+    if (typeof options === 'boolean') {
+        options = {
+            honorIndex: options
+        };
+    }
+
     options = assign(options, {
         honorPackage: options.honorPackage !== false
     });
