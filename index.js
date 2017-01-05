@@ -1,90 +1,81 @@
-var path = require("path");
-module.exports = DirectoryNamedWebpackPlugin;
+var path        = require('path');
+var assign      = require('object-assign');
+var forEachBail = require('enhanced-resolve/lib/forEachBail');
+var basename    = require('enhanced-resolve/lib/getPaths').basename;
 
-function DirectoryNamedWebpackPlugin(options) {
-  var optionsToUse = typeof options === "boolean" ? { honorIndex : options } : (options || {});
-  this.options = {
-    honorIndex: optionsToUse.honorIndex,
-    honorPackage: optionsToUse.honorPackage !== false,
-    transformFn: optionsToUse.transformFn,
-    ignoreFn: optionsToUse.ignoreFn || noop
-  };
-}
-
-DirectoryNamedWebpackPlugin.prototype.apply = function (resolver) {
-  resolver.plugin("directory", resolveDirectory(this.options));
-};
-
-function resolveDirectory(options) {
-  return function (request, callback) {
-    if (options.ignoreFn(request)) {
-      return callback();
-    }
-    var _this = this;
-    var dirPath = _this.join(request.path, request.request);
-    var dirName = dirPath.substr(dirPath.lastIndexOf(path.sep) + path.sep.length);
-    _this.fileSystem.stat(dirPath, function (err, stat) {
-      if (err || !stat || !stat.isDirectory()) {
-        callback.log && callback.log(dirPath + " doesn't exist or is not a directory (directory named)");
-        return callback();
-      }
-
-      var attempts = []
-
-      if (options.honorPackage) {
-        try {
-          var mainFilePath = require(path.resolve(dirPath, 'package.json')).main;
-          attempts.push(mainFilePath);
-        } catch (e) {
-          // No problem, this is optional.
-        }
-      }
-
-      if (options.honorIndex) {
-        attempts.push("index");
-      }
-
-      if (options.transformFn) {
-        var transformResult = options.transformFn(dirName);
-
-        if (!Array.isArray(transformResult)) {
-          transformResult = [ transformResult ];
+function apply(options, resolver) {
+    // plugin name taken from: https://github.com/webpack/enhanced-resolve/blob/7df23d64da27cd76b09046f9b9ffd61480c0ddca/test/plugins.js
+    resolver.plugin('after-existing-directory', function (request, callback) {
+        if (options.ignoreFn && options.ignoreFn(request)) {
+            return callback();
         }
 
-        transformResult = transformResult.filter(function (attemptName) {
-          return typeof attemptName === 'string' && attemptName.length > 0;
-        });
+        var dirPath = request.path;
+        var dirName = basename(dirPath);
+        var attempts = [];
 
-        attempts = attempts.concat(transformResult);
-      } else {
-        attempts.push(dirName);
-      }
+        if (options.honorPackage) {
+            try {
+                var mainFilePath = require(path.resolve(dirPath, 'package.json')).main;
 
-      _this.forEachBail(
-        attempts,
-        function (file, innerCallback) {
-          var fileRequest = { path: dirPath, query: request.query, request: file };
-          _this.doResolve("file", fileRequest, wrap(innerCallback, file));
-        },
-        function (result) {
-          return result ? callback(null, result) : callback();
+                if (mainFilePath) {
+                    attempts.push(mainFilePath);
+                }
+            } catch (e) {
+                // No problem, this is optional.
+            }
         }
+
+        if (options.honorIndex) {
+            attempts.push('index');
+        }
+
+        if (options.transformFn) {
+            var transformResult = options.transformFn(dirName);
+
+            if (!Array.isArray(transformResult)) {
+                transformResult = [ transformResult ];
+            }
+
+            transformResult = transformResult.filter(function (attemptName) {
+                return typeof attemptName === 'string' && attemptName.length > 0;
+            });
+
+            attempts = attempts.concat(transformResult);
+        } else {
+            attempts.push(dirName);
+        }
+
+        forEachBail(
+            attempts,
+
+            function (fileName) {
+                var filePath = resolver.join(dirPath, fileName);
+
+                // approach taken from: https://github.com/webpack/enhanced-resolve/blob/master/lib/CloneBasenamePlugin.js#L21
+                var obj = assign({}, request, {
+                    path: filePath,
+                    relativePath: request.relativePath &&
+                        resolver.join(request.relativePath, fileName)
+                });
+
+                // file type taken from: https://github.com/webpack/enhanced-resolve/blob/7df23d64da27cd76b09046f9b9ffd61480c0ddca/test/plugins.js
+                resolver.doResolve('undescribed-raw-file', obj, 'using path: ' + filePath, callback);
+            },
+
+            function (result) {
+                return result ? callback(null, result) : callback();
+            }
       );
     });
-  };
 }
 
-function wrap(callback, file) {
-  function wrapper(err, result) {
-    if (callback.log) {
-      callback.log("directory name file " + file);
-    }
-    return !err && result ? callback(result) : callback();
-  }
-  wrapper.log = callback.log;
-  wrapper.stack = callback.stack;
-  wrapper.missing = callback.missing;
-  return wrapper;
-}
+module.exports = function (options) {
+    options = assign(options, {
+        honorPackage: options.honorPackage !== false
+    });
 
-function noop() {}
+    return {
+        apply: apply.bind(this, options)
+    };
+};

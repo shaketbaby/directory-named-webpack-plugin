@@ -22,9 +22,13 @@
   },
   "homepage": "https://github.com/shaketbaby/directory-named-webpack-plugin#readme",
   "dependencies": {
-    "webpack": "^1.13.0"
+    "enhanced-resolve": "^3.0.2",
+    "object-assign": "^4.1.0"
   },
   "devDependencies": {
     "version-bump-prompt": "^1.5.1"
+  },
+  "peerDependencies": {
+    "webpack": "^2.2.0-rc.3"
   }
 }
