@@ -1,6 +1,8 @@
 
 ### master is for Webpack V2, please use 1.x versions for Webpack V1
 
+[![NPM](https://nodei.co/npm/directory-named-webpack-plugin.png?downloads=true)](https://nodei.co/npm/directory-named-webpack-plugin/)
+
 ## What
 Normally, Webpack looks for **index** file when the path passed to `require` points to a directory; which means there may have a lot of **index** files.
 
