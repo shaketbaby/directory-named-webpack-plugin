@@ -14,7 +14,7 @@ module.exports = function (options) {
 
 function doApply(options, resolver) {
   // plugin name taken from: https://github.com/webpack/enhanced-resolve/blob/7df23d64da27cd76b09046f9b9ffd61480c0ddca/test/plugins.js
-  resolver.plugin('after-existing-directory', function (request, callback) {
+  resolver.plugin('before-existing-directory', function (request, callback) {
     if (options.ignoreFn && options.ignoreFn(request)) {
       return callback();
     }
@@ -58,7 +58,7 @@ function doApply(options, resolver) {
     forEachBail(
       attempts,
 
-      function (fileName) {
+      function (fileName, innerCallback) {
         var filePath = resolver.join(dirPath, fileName);
 
         // approach taken from: https://github.com/webpack/enhanced-resolve/blob/master/lib/CloneBasenamePlugin.js#L21
@@ -69,7 +69,7 @@ function doApply(options, resolver) {
         });
 
         // file type taken from: https://github.com/webpack/enhanced-resolve/blob/7df23d64da27cd76b09046f9b9ffd61480c0ddca/test/plugins.js
-        resolver.doResolve('undescribed-raw-file', obj, 'using path: ' + filePath, callback);
+        resolver.doResolve('undescribed-raw-file', obj, 'using path: ' + filePath, wrap(innerCallback, fileName));
       },
 
       function (result) {
@@ -77,4 +77,18 @@ function doApply(options, resolver) {
       }
     );
   });
+}
+
+function wrap(callback, fileName) {
+  function wrapper(err, result) {
+    if (callback.log) {
+      callback.log("directory name file " + fileName);
+    }
+
+    return err === null && result ? callback(result) : callback();
+  }
+  wrapper.log = callback.log;
+  wrapper.stack = callback.stack;
+  wrapper.missing = callback.missing;
+  return wrapper;
 }
