@@ -34,7 +34,10 @@ function resolveDirectory(options) {
       if (options.honorPackage) {
         try {
           var mainFilePath = require(path.resolve(dirPath, 'package.json')).main;
-          attempts.push(mainFilePath);
+
+          if (mainFilePath) {
+            attempts.push(mainFilePath);
+          }
         } catch (e) {
           // No problem, this is optional.
         }
