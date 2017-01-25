@@ -1,3 +1,4 @@
+### 1.x versions are for Webpack V1, please use 2.x versions for Webpack v2.
 
 ## What
 Normally, Webpack looks for **index** file when the path passed to `require` points to a directory; which means there may have a lot of **index** files.
@@ -43,11 +44,11 @@ You can also pass in an options object to further customise the plugin:
         // return true if request should be ignored, false otherwise
         return false; // default
       },
-      
+
       transformFn: function(dirName) {
         // use this function to provide custom transforms of resolving directory name
         // return desired filename or array of filenames which will be used
-        // one by one (honoring order) in attempts to resolve module        
+        // one by one (honoring order) in attempts to resolve module
         return dirName; // default
       }
     }))
