@@ -4,9 +4,9 @@ var forEachBail = require('enhanced-resolve/lib/forEachBail');
 var basename = require('enhanced-resolve/lib/getPaths').basename;
 
 module.exports = function (options) {
-  var optionsToUse = (typeof options === 'boolean') ? { honorIndex: options } : (
-    options ? assign(options, { honorPackage: options.honorPackage !== false }) : {}
-  );
+  var optionsToUse = (typeof options === 'boolean') ? { honorIndex: options } : (options || {});
+  var mainFields = optionsToUse.honorPackage;
+  optionsToUse.mainFields = mainFields !== false && !Array.isArray(mainFields) ? ["main"] : mainFields;
   return {
     apply: doApply.bind(this, optionsToUse)
   };
@@ -23,13 +23,12 @@ function doApply(options, resolver) {
     var dirName = basename(dirPath);
     var attempts = [];
 
-    if (options.honorPackage) {
+    if (options.mainFields) {
       try {
-        var mainFilePath = require(path.resolve(dirPath, 'package.json')).main;
-
-        if (mainFilePath) {
-          attempts.push(mainFilePath);
-        }
+        var pkg = require(path.resolve(dirPath, "package.json"));
+        options.mainFields.forEach(function(field) {
+          pkg[field] && attempts.push(pkg[field]);
+        });
       } catch (e) {
         // No problem, this is optional.
       }
