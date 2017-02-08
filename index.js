@@ -3,9 +3,13 @@ module.exports = DirectoryNamedWebpackPlugin;
 
 function DirectoryNamedWebpackPlugin(options) {
   var optionsToUse = typeof options === "boolean" ? { honorIndex : options } : (options || {});
+  var mainFields = optionsToUse.honorPackage;
+  if (mainFields !== false && !Array.isArray(mainFields)) {
+    mainFields = ["main"];
+  }
   this.options = {
+    mainFields: mainFields,
     honorIndex: optionsToUse.honorIndex,
-    honorPackage: optionsToUse.honorPackage !== false,
     transformFn: optionsToUse.transformFn,
     ignoreFn: optionsToUse.ignoreFn || noop
   };
@@ -31,13 +35,12 @@ function resolveDirectory(options) {
 
       var attempts = []
 
-      if (options.honorPackage) {
+      if (options.mainFields) {
         try {
-          var mainFilePath = require(path.resolve(dirPath, 'package.json')).main;
-
-          if (mainFilePath) {
-            attempts.push(mainFilePath);
-          }
+          var pkg = require(path.resolve(dirPath, "package.json"));
+          options.mainFields.forEach(function(field) {
+            pkg[field] && attempts.push(pkg[field]);
+          });
         } catch (e) {
           // No problem, this is optional.
         }
@@ -55,7 +58,7 @@ function resolveDirectory(options) {
         }
 
         transformResult = transformResult.filter(function (attemptName) {
-          return typeof attemptName === 'string' && attemptName.length > 0;
+          return typeof attemptName === "string" && attemptName.length > 0;
         });
 
         attempts = attempts.concat(transformResult);
