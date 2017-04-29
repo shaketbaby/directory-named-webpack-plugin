@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "push": "git push --tag origin master:master",
+    "test": "node_modules/.bin/jest --verbose",
     "bump": "bump --prompt --commit --tag --push --all"
   },
   "repository": {
@@ -26,6 +27,7 @@
     "object-assign": "^4.1.0"
   },
   "devDependencies": {
+    "jest": "^19.0.2",
     "version-bump-prompt": "^1.5.1"
   },
   "peerDependencies": {
