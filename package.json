@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "push": "git push --tag origin master:master",
-    "test": "node_modules/.bin/jest --verbose",
+    "test": "jest --verbose",
     "bump": "bump --prompt --commit --tag --push --all"
   },
   "repository": {
