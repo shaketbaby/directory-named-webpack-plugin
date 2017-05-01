@@ -8,45 +8,44 @@ var createResolver = options =>
     plugins: [new plugin(options)]
   });
 
-describe("Directory Named Webpack Plugin", () => {
-  it("basicDir/ should match with basicDir.js", done => {
+describe("Simple matches", () => {
+  it("basicDir/ should match to basicDir/basicDir.js", done => {
     var resolver = createResolver();
-    resolver.resolve({}, __dirname, "./__mocks__/basicTest", function(
+    resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
       err,
       result
     ) {
-      if (err) return done(err);
       expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/basicTest/basicTest.js")
+        path.resolve(__dirname, "./__mocks__/basicDir/basicDir.js")
       );
       done();
     });
   });
 
-  it("HonorDir/ should honor package and match to foo.js", done => {
+  it("HonorDir/ should honor package and match to HonorDir/foo.js", done => {
     var resolver = createResolver();
-    resolver.resolve({}, __dirname, "./__mocks__/HonorPackage", function(
+    resolver.resolve({}, __dirname, "./__mocks__/HonorDir", function(
       err,
       result
     ) {
-      if (err) return done(err);
       expect(result).toEqual(
         path.resolve(__dirname, "./__mocks__/HonorDir/foo.js")
       );
       done();
     });
   });
+});
 
-  it("HonorDir/ should honor index and match to index.js", done => {
+describe("Honor options (honorIndex and honorPackage)", () => {
+  it("HonorDir/ should honor index and match to HonorDir/index.js", done => {
     var resolver = createResolver({
       honorIndex: true,
       honorPackage: false
     });
-    resolver.resolve({}, __dirname, "./__mocks__/HonorPackage", function(
+    resolver.resolve({}, __dirname, "./__mocks__/HonorDir", function(
       err,
       result
     ) {
-      if (err) return done(err);
       expect(result).toEqual(
         path.resolve(__dirname, "./__mocks__/HonorDir/index.js")
       );
@@ -54,16 +53,15 @@ describe("Directory Named Webpack Plugin", () => {
     });
   });
 
-  it("HonorDir/ should match to HonorDir.js when honor properties are false", done => {
+  it("HonorDir/ should match to HonorDir/HonorDir.js when honor properties are false", done => {
     var resolver = createResolver({
       honorIndex: false,
       honorPackage: false
     });
-    resolver.resolve({}, __dirname, "./__mocks__/HonorPackage", function(
+    resolver.resolve({}, __dirname, "./__mocks__/HonorDir", function(
       err,
       result
     ) {
-      if (err) return done(err);
       expect(result).toEqual(
         path.resolve(__dirname, "./__mocks__/HonorDir/HonorDir.js")
       );
