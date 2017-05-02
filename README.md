@@ -39,6 +39,7 @@ If there is also an index file, e.g. `index.js`, and it should be used as entry 
 You can also pass in an options object to further customise the plugin:
 ```javascript
   var DirectoryNamedWebpackPlugin = require("directory-named-webpack-plugin");
+  var path = require("path");
 
   resolve: {
     plugins: [
@@ -50,11 +51,22 @@ You can also pass in an options object to further customise the plugin:
         // defaults to true, which is the same as ["main"]
         honorPackage: true | false | ["main"],
 
+        // if it's matching with resolving directory's path, plugin will ignore the custom resolving.
+        // it can be string/regex or Array of string/regex.
+        exclude: /node_modules/
+
         ignoreFn: function(webpackResolveRequest) {
           // custom logic to decide whether request should be ignored
           // return true if request should be ignored, false otherwise
           return false; // default
         },
+
+        // define where the imported files will be resolving by DirectoryNamedWebpackPlugin.
+        // it can be string/regex or Array of string/regex.
+        include: [
+          path.resolve('./app/components'),
+          path.resolve('./app/containers')
+        ]
 
         transformFn: function(dirName) {
           // use this function to provide custom transforms of resolving directory name
