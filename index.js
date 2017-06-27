@@ -5,7 +5,9 @@ var basename = require('enhanced-resolve/lib/getPaths').basename;
 
 module.exports = function (options) {
   var optionsToUse = (typeof options === 'boolean') ? { honorIndex: options } : (options || {});
-  var {honorPackage: mainFields, exclude, include} = optionsToUse;
+  var mainFields = optionsToUse.honorPackage,
+      exclude = optionsToUse.exclude,
+      include = optionsToUse.include;
   optionsToUse.mainFields = mainFields !== false && !Array.isArray(mainFields) ? ["main"] : mainFields;
   // make exclude array if not
   optionsToUse.exclude = exclude && !Array.isArray(exclude) ? [exclude] : exclude;
@@ -28,12 +30,16 @@ function doApply(options, resolver) {
     var attempts = [];
 
     // return if path matches with excludes
-    if (options.exclude && options.exclude.some(exclude=> dirPath.search(exclude) >= 0)) {
+    if (options.exclude && options.exclude.some(function(exclude) {
+      return dirPath.search(exclude) >= 0;
+    })) {
       return callback();
     }
 
     // return if path doesn't match with includes
-    if (options.include && !options.include.some(include=> dirPath.search(include) >= 0)){
+    if (options.include && !options.include.some(function(include) {
+      return dirPath.search(include) >= 0;
+    })) {
       return callback();
     }
 
