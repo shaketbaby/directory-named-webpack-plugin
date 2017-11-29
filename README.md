@@ -68,7 +68,7 @@ You can also pass in an options object to further customise the plugin:
           path.resolve('./app/containers')
         ]
 
-        transformFn: function(dirName) {
+        transformFn: function(dirName, dirPath, webpackResolveRequest) {
           // use this function to provide custom transforms of resolving directory name
           // return desired filename or array of filenames which will be used
           // one by one (honoring order) in attempts to resolve module
