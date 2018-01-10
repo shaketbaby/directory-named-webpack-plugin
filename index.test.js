@@ -84,7 +84,7 @@ describe("include, exclude and ignoreFn options", () => {
 
   it("basicDir/ should return undefined with array of regex exclude", done => {
     var resolver = createResolver({
-      exclude: [/other_regex_pattern/, /\/.+Dir/]
+      exclude: [/other_regex_pattern/, "\\" + path.sep + ".+Dir"]
     });
     resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
       err,
@@ -125,7 +125,7 @@ describe("include, exclude and ignoreFn options", () => {
   });
 
   it("basicDir/ should match to basicDir/basicDir.js with string include", done => {
-    var resolver = createResolver({ include: "__mocks__/" });
+    var resolver = createResolver({ include: "__mocks__\\" + path.sep });
     resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
       err,
       result
@@ -139,7 +139,7 @@ describe("include, exclude and ignoreFn options", () => {
 
   it("basicDir/ should match to basicDir/basicDir.js with array of regex include", done => {
     var resolver = createResolver({
-      include: [/components\//, /dir/i, /other_regex_pattern/]
+      include: ["components\\" + path.sep, /dir/i, /other_regex_pattern/]
     });
     resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
       err,
