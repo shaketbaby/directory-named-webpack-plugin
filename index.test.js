@@ -2,168 +2,82 @@ var ResolverFactory = require("enhanced-resolve").ResolverFactory;
 var plugin = require("./index.js");
 var path = require("path");
 
-var createResolver = options =>
-  ResolverFactory.createResolver({
-    fileSystem: require("fs"),
-    plugins: [new plugin(options)]
-  });
-
 describe("Simple matches", () => {
-  it("basicDir/ should match to basicDir/basicDir.js", done => {
-    var resolver = createResolver();
-    resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
-      err,
-      result
-    ) {
-      expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/basicDir/basicDir.js")
-      );
-      done();
-    });
-  });
+  it("basicDir/ should match to basicDir/basicDir.js", resolveAndCheck(
+    "./__mocks__/basicDir",
+    "./__mocks__/basicDir/basicDir.js"
+  ));
 
-  it("HonorDir/ should honor package and match to HonorDir/foo.js", done => {
-    var resolver = createResolver();
-    resolver.resolve({}, __dirname, "./__mocks__/HonorDir", function(
-      err,
-      result
-    ) {
-      expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/HonorDir/foo.js")
-      );
-      done();
-    });
-  });
+  it("HonorDir/ should honor package and match to HonorDir/foo.js", resolveAndCheck(
+    "./__mocks__/HonorDir",
+    "./__mocks__/HonorDir/foo.js"
+  ));
 });
 
 describe("Honor options (honorIndex and honorPackage)", () => {
-  it("HonorDir/ should honor index and match to HonorDir/index.js", done => {
-    var resolver = createResolver({
-      honorIndex: true,
-      honorPackage: false
-    });
-    resolver.resolve({}, __dirname, "./__mocks__/HonorDir", function(
-      err,
-      result
-    ) {
-      expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/HonorDir/index.js")
-      );
-      done();
-    });
-  });
+  it("HonorDir/ should honor index and match to HonorDir/index.js", resolveAndCheck(
+    "./__mocks__/HonorDir",
+    "./__mocks__/HonorDir/index.js",
+    { honorIndex: true, honorPackage: false }
+  ));
 
-  it("HonorDir/ should match to HonorDir/HonorDir.js when honor properties are false", done => {
-    var resolver = createResolver({
-      honorIndex: false,
-      honorPackage: false
-    });
-    resolver.resolve({}, __dirname, "./__mocks__/HonorDir", function(
-      err,
-      result
-    ) {
-      expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/HonorDir/HonorDir.js")
-      );
-      done();
-    });
-  });
+  it("HonorDir/ should match to HonorDir/HonorDir.js when honor properties are false", resolveAndCheck(
+    "./__mocks__/HonorDir",
+    "./__mocks__/HonorDir/HonorDir.js",
+    { honorIndex: false, honorPackage: false }
+  ));
 });
 
 describe("include, exclude and ignoreFn options", () => {
-  it("basicDir/ should return undefined with regex exclude", done => {
-    var resolver = createResolver({ exclude: /basicDir/ });
-    resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
-      err,
-      result
-    ) {
-      expect(result).toBeUndefined();
-      done();
-    });
-  });
+  it("basicDir/ should return undefined with regex exclude", resolveAndCheck(
+    "./__mocks__/basicDir", undefined, { exclude: /basicDir/ }
+  ));
 
-  it("basicDir/ should return undefined with array of regex exclude", done => {
-    var resolver = createResolver({
-      exclude: [/other_regex_pattern/, "\\" + path.sep + ".+Dir"]
-    });
-    resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
-      err,
-      result
-    ) {
-      expect(result).toBeUndefined();
-      done();
-    });
-  });
+  it("basicDir/ should return undefined with array of regex exclude", resolveAndCheck(
+    "./__mocks__/basicDir", undefined, { exclude: [/other_regex_pattern/, "\\" + path.sep + ".+Dir"] }
+  ));
 
-  it("basicDir/ should match to basicDir/basicDir.js with unrelated exclude", done => {
-    var resolver = createResolver({ exclude: /node_modules/ });
-    resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
-      err,
-      result
-    ) {
-      expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/basicDir/basicDir.js")
-      );
-      done();
-    });
-  });
+  it("basicDir/ should match to basicDir/basicDir.js with unrelated exclude", resolveAndCheck(
+    "./__mocks__/basicDir",
+    "./__mocks__/basicDir/basicDir.js",
+    { exclude: /node_modules/ }
+  ));
 
-  it("HonorDir/ should match with regular resolver because of include mismatch", done => {
-    var resolver = createResolver({
-      include: /other_regex_pattern/,
-      honorPackage: false
-    });
-    resolver.resolve({}, __dirname, "./__mocks__/HonorDir", function(
-      err,
-      result
-    ) {
-      expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/HonorDir/foo.js")
-      );
-      done();
-    });
-  });
+  it("HonorDir/ should match with regular resolver because of include mismatch", resolveAndCheck(
+    "./__mocks__/HonorDir",
+    "./__mocks__/HonorDir/foo.js",
+    { include: /other_regex_pattern/, honorPackage: false }
+  ));
 
-  it("basicDir/ should match to basicDir/basicDir.js with string include", done => {
-    var resolver = createResolver({ include: "__mocks__\\" + path.sep });
-    resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
-      err,
-      result
-    ) {
-      expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/basicDir/basicDir.js")
-      );
-      done();
-    });
-  });
+  it("basicDir/ should match to basicDir/basicDir.js with string include", resolveAndCheck(
+    "./__mocks__/basicDir",
+    "./__mocks__/basicDir/basicDir.js",
+    { include: "__mocks__\\" + path.sep }
+  ));
 
-  it("basicDir/ should match to basicDir/basicDir.js with array of regex include", done => {
-    var resolver = createResolver({
-      include: ["components\\" + path.sep, /dir/i, /other_regex_pattern/]
-    });
-    resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
-      err,
-      result
-    ) {
-      expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/basicDir/basicDir.js")
-      );
-      done();
-    });
-  });
+  it("basicDir/ should match to basicDir/basicDir.js with array of regex include", resolveAndCheck(
+    "./__mocks__/basicDir",
+    "./__mocks__/basicDir/basicDir.js",
+    { include: ["components\\" + path.sep, /dir/i, /other_regex_pattern/] }
+  ));
 
-  it("basicDir/ should match to basicDir/basic.js with transformFn", done => {
-    var resolver = createResolver({
-      transformFn: dirName => [dirName.replace("Dir", ""), dirName]
-    });
-    resolver.resolve({}, __dirname, "./__mocks__/basicDir", function(
-      err,
-      result
-    ) {
-      expect(result).toEqual(
-        path.resolve(__dirname, "./__mocks__/basicDir/basic.js")
-      );
-      done();
-    });
-  });
+  it("basicDir/ should match to basicDir/basic.js with transformFn", resolveAndCheck(
+    "./__mocks__/basicDir",
+    "./__mocks__/basicDir/basic.js",
+    { transformFn: dirName => [dirName.replace("Dir", ""), dirName] }
+  ));
 });
+
+function resolveAndCheck(pathToResolve, expectedPath, options) {
+  return (done) => {
+    const resolver = ResolverFactory.createResolver({
+      fileSystem: require("fs"),
+      plugins: [new plugin(options)]
+    });
+    resolver.resolve({}, __dirname, pathToResolve, {}, (err, result) => {
+      if (err) { return done(err); }
+      expect(result).toEqual(path.resolve(__dirname, expectedPath));
+      done();
+    });
+  }
+}
