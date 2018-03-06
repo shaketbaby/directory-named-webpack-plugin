@@ -1,0 +1,16 @@
+{
+  "name": "directory-named-webpack-plugin-sample",
+  "version": "1.0.0",
+  "main": "sample.js",
+  "scripts": {
+    "bundle-dev": "webpack --mode development",
+    "bundle-prod": "webpack --mode production"
+  },
+  "author": "Shaketbaby",
+  "license": "MIT",
+  "dependencies": {
+    "directory-named-webpack-plugin": "file:../directory-named-webpack-plugin",
+    "webpack": "^4.0.0",
+    "webpack-cli": "^2.0.10"
+  }
+}
