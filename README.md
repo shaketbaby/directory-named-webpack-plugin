@@ -1,5 +1,5 @@
 
-### master is for Webpack V2.x & V3.x, please use 1.x versions for Webpack V1
+### master requires Webpack V4, please use 2.x versions for Webpack V2.x & V3.x and 1.x versions for Webpack V1
 
 [![NPM](https://nodei.co/npm/directory-named-webpack-plugin.png?downloads=true)](https://nodei.co/npm/directory-named-webpack-plugin/)
 
