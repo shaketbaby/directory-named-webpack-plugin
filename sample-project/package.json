@@ -9,7 +9,7 @@
   "author": "Shaketbaby",
   "license": "MIT",
   "dependencies": {
-    "directory-named-webpack-plugin": "file:../directory-named-webpack-plugin",
+    "directory-named-webpack-plugin": "^4.0.0",
     "webpack": "^4.0.0",
     "webpack-cli": "^2.0.10"
   }
