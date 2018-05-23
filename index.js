@@ -34,14 +34,14 @@ function doApply(options, resolver) {
   
       // return if path matches with excludes
       if (options.exclude && options.exclude.some(function(exclude) {
-        return dirPath.search(exclude) >= 0;
+        return dirPath.search(exclude.replace(/\\/g, '\\\\')) >= 0;
       })) {
         return callback();
       }
   
       // return if path doesn't match with includes
       if (options.include && !options.include.some(function(include) {
-        return dirPath.search(include) >= 0;
+        return dirPath.search(include.replace(/\\/g, '\\\\')) >= 0;
       })) {
         return callback();
       }
