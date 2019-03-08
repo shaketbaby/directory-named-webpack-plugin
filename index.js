@@ -18,6 +18,11 @@ module.exports = function (options) {
   };
 };
 
+function stringIncludes(string, maybeString) {
+  // String.includes throws if the argument is not a string
+  return typeof maybeString === 'string' ? string.includes(maybeString) : false;
+}
+
 function doApply(options, resolver) {
   // file type taken from: https://github.com/webpack/enhanced-resolve/blob/v4.0.0/test/plugins.js
   var target = resolver.ensureHook("undescribed-raw-file");
@@ -34,14 +39,14 @@ function doApply(options, resolver) {
   
       // return if path matches with excludes
       if (options.exclude && options.exclude.some(function(exclude) {
-        return dirPath.search(exclude) >= 0;
+        return dirPath.search(exclude) >= 0 || stringIncludes(dirPath, exclude);
       })) {
         return callback();
       }
   
       // return if path doesn't match with includes
       if (options.include && !options.include.some(function(include) {
-        return dirPath.search(include) >= 0;
+        return dirPath.search(include) >= 0 || stringIncludes(dirPath, include);
       })) {
         return callback();
       }
