@@ -74,6 +74,10 @@ You can also pass in an options object to further customise the plugin:
           // one by one (honoring order) in attempts to resolve module
           return dirName; // default
         }
+
+        // name of the resolver hook that should be tapped into
+        // by default, uses "before-existing-directory"
+        resolverHook: "before-existing-directory"
       })
     ]
   }
